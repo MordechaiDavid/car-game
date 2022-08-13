@@ -1,18 +1,21 @@
 import javax.swing.*;
 
-public class Window extends JFrame  {
+public class Main extends JFrame  {
 
-    public Window(){
-        this.setSize(600,600);
+
+
+    public Main(){
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.add(new Panel());
+        this.add(new GameScene());
+        this.pack();
         this.setVisible(true);
+
     }
 
 
 
     public static void main(String[] args) {
-       new Window();
+       new Main();
 
     }
 }
