@@ -1,5 +1,8 @@
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -19,7 +22,7 @@ public class GameScene extends JPanel {
     protected Rectangle[] lines;
 
 
-    public GameScene(){
+    public GameScene()  {
         this.setPreferredSize(new Dimension(PANEL_WIDTH,PANEL_HEIGHT));
         this.setBackground(Color.black);
         car = new ImageIcon("car.png").getImage();
