@@ -3,6 +3,8 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class GameScene extends JPanel {
     protected final int PANEL_WIDTH = 350;
@@ -11,10 +13,12 @@ public class GameScene extends JPanel {
     protected final int LINE_HEIGHT = 40;
     protected final int LINE_SPACE = 25;
     private final int NUM_OF_LINES = (int) (PANEL_HEIGHT/(LINE_HEIGHT+LINE_SPACE))*LINE_HEIGHT;
-
     protected Image car;
     protected int xCar;
-
+    protected Timer timer;
+    protected TimerTask task;
+    protected int yRandomCar=0;
+    protected boolean isDrive;
     protected Rectangle[] lines;
 
 
@@ -28,6 +32,7 @@ public class GameScene extends JPanel {
             lines[i] = new Rectangle(PANEL_WIDTH / 2, j, LINE_WIDTH, LINE_HEIGHT);
             j += LINE_HEIGHT;
         }
+        timer = new Timer();
         this.addKeyListener(new Listener());
         this.setFocusable(true);
         this.requestFocus();
@@ -47,7 +52,38 @@ public class GameScene extends JPanel {
             g.fillRect( lines[i].x, lines[i].y, lines[i].width,lines[i].height);
         }
         g.drawImage(car, xCar, PANEL_HEIGHT/2,  null);
+        newCars(g);
+    }
 
+    public void newCars(Graphics g) {
+            task = new TimerTask() {
+                @Override
+                public void run() {
+                    Image randomCar = new ImageIcon("randomCar.png").getImage();
+                    g.drawImage(randomCar, 0, yRandomCar, null);
+                    moveCars(randomCar);
+                    repaint();
+
+                }
+            };
+            timer.scheduleAtFixedRate(task, 0, 4000 );
+
+        }
+
+
+    public void moveCars(Image car){
+        yRandomCar+=10;
+    }
+
+    public void drive(){
+        for (int i = 0; i < lines.length; i++) {
+            if (lines[i].y >= PANEL_HEIGHT) {
+                lines[i].setBounds(lines[i].x, 0, lines[i].width, lines[i].height);
+            }
+            else {
+                lines[i].setBounds(lines[i].x, lines[i].y + 10, lines[i].width, lines[i].height);
+            }
+        }
     }
 
 
@@ -59,22 +95,26 @@ public class GameScene extends JPanel {
 
         @Override
         public void keyPressed(KeyEvent e) {
-            if (e.getKeyCode() == KeyEvent.VK_RIGHT )
-                xCar+=10;
-            if (e.getKeyCode() == KeyEvent.VK_LEFT)
-                xCar-=10;
-            if (e.getKeyCode() == KeyEvent.VK_UP){
-                for (int i = 0; i < lines.length; i++) {
-                    if (lines[i].y >= PANEL_HEIGHT) {
-                        lines[i].setBounds(lines[i].x, 0, lines[i].width, lines[i].height);
-                    }
-                    else {
-                        lines[i].setBounds(lines[i].x, lines[i].y + 10, lines[i].width, lines[i].height);
-                    }
-                }
+            if (e.getKeyCode() == KeyEvent.VK_RIGHT ) {
+                isDrive=true;
+                xCar += 10;
+                drive();
+            }
+            else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+                isDrive=true;
+                xCar -= 10;
+                drive();
+            }
+            else if (e.getKeyCode() == KeyEvent.VK_UP){
+                isDrive=true;
+                drive();
+            }
+            else {
+                isDrive=false;
             }
             repaint();
-            }
+
+        }
 
         @Override
         public void keyReleased(KeyEvent e) {
@@ -85,28 +125,5 @@ public class GameScene extends JPanel {
 
 }
 
-
-    /*
-
-    public void gameLoop(){
-        new Thread( ()-> {
-            Listener listener = new Listener(lines, xCar);
-            this.addKeyListener(listener);
-            this.setFocusable(true);
-            this.requestFocus();
-            while (true) {
-                try {
-                    Thread.sleep(70);
-                    repaint();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-
-
-    }
-
-     */
 
 
